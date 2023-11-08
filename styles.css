@@ -1,0 +1,67 @@
+body {
+  font-family: Arial, sans-serif;
+  background-image: url('/Imagenes/Background.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #800080;
+  color: white;
+  padding: 10px;
+}
+
+header {
+  text-align: center;
+  padding: 20px 0;
+}
+
+#logo {
+  width: 100px;
+  height: 100px;
+}
+
+h1 {
+  font-size: 2em;
+  color: #fff;
+}
+
+.form-inline {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.form-control {
+  flex: 1;
+  margin: 0 10px;
+}
+
+.btn {
+  width: 100px;
+}
+
+.alert {
+  margin-top: 20px;
+  padding: 20px;
+  color: #fff;
+  border-radius: 5px;
+}
+
+#invert {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  display: block;
+}
+
+#invert img {
+  width: 100%;
+  height: auto;
+}
+
+.alert-danger {
+  background-color: #f44336;
+}
