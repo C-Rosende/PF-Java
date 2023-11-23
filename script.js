@@ -1,80 +1,87 @@
-const form = document.getElementById("form");
-const amountInput = document.getElementById("amount");
-const fromSelect = document.getElementById("from");
-const toSelect = document.getElementById("to");
-const resultDiv = document.getElementById("result");
-const errorDiv = document.getElementById("error");
-const apiURL = "https://v6.exchangerate-api.com/v6/b7ce959c6a2fee836009ded6/latest/";
+var app = {
+  form: document.getElementById("form"),
+  amountInput: document.getElementById("amount"),
+  fromSelect: document.getElementById("from"),
+  toSelect: document.getElementById("to"),
+  resultDiv: document.getElementById("result"),
+  errorDiv: document.getElementById("error"),
+  apiURL: "https://v6.exchangerate-api.com/v6/b7ce959c6a2fee836009ded6/latest/",
 
-function getRates(from, callback) {
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", apiURL + from);
-  xhr.send();
-  xhr.onload = function () {
-    if (xhr.status == 200) {
-      const response = JSON.parse(xhr.responseText);
-      callback(response.conversion_rates);
+  getRates: function(from, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", this.apiURL + from);
+    xhr.send();
+    xhr.onload = function () {
+      if (xhr.status == 200) {
+        var response = JSON.parse(xhr.responseText);
+        callback(response.conversion_rates);
+      } else {
+        this.showError("Error: " + xhr.statusText);
+      }
+    }.bind(this);
+  },
+
+  formatNumber: function(num) {
+    num = Number(num);
+    var parts = num.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.join(",");
+  },
+
+  showResult: function(amount, from, to, rate) {
+    var converted = amount * rate[to];
+    var formattedConverted = this.formatNumber(converted);
+    var formattedAmount = this.formatNumber(amount);
+    var message = `${formattedAmount} ${from} = ${formattedConverted} ${to}`;
+    this.resultDiv.textContent = message;
+    this.resultDiv.style.display = "block";
+    this.errorDiv.style.display = "none";
+  },
+
+  showError: function(message) {
+    this.errorDiv.textContent = message;
+    this.errorDiv.style.display = "block";
+    this.resultDiv.style.display = "none";
+  },
+
+  handleSubmit: function(event) {
+    event.preventDefault();
+    var amount = Number(this.amountInput.value);
+    var from = this.fromSelect.value;
+    var to = this.toSelect.value;
+    if (amount > 0) {
+      this.getRates(from, function (rates) {
+        this.showResult(amount, from, to, rates);
+      }.bind(this));
     } else {
-      showError("Error: " + xhr.statusText);
+      this.showError("Por favor, introduce una cantidad válida");
     }
-  };
-}
+  },
 
-function formatNumber(num) {
-  num = Number(num);
-  const parts = num.toString().split(".");
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return parts.join(",");
-}
+  init: function() {
+    this.form.addEventListener("submit", this.handleSubmit.bind(this));
+    this.getRates("USD", function (rates) {
+      var currencies = Object.keys(rates);
+      for (var currency of currencies) {
+        var option = document.createElement('option');
+        option.value = currency;
+        option.textContent = currency;
+        this.fromSelect.appendChild(option);
+        this.toSelect.appendChild(option.cloneNode(true));
+      }
+    }.bind(this));
 
-function showResult(amount, from, to, rate) {
-  const converted = amount * rate[to];
-  const formattedConverted = formatNumber(converted);
-  const formattedAmount = formatNumber(amount);
-  const message = `${formattedAmount} ${from} = ${formattedConverted} ${to}`;
-  resultDiv.textContent = message;
-  resultDiv.style.display = "block";
-  errorDiv.style.display = "none";
-}
+    var invertButton = document.getElementById("invert");
+    invertButton.addEventListener("click", this.invertCurrencies.bind(this));
+  },
 
-function showError(message) {
-  errorDiv.textContent = message;
-  errorDiv.style.display = "block";
-  resultDiv.style.display = "none";
-}
-
-function handleSubmit(event) {
-  event.preventDefault();
-  const amount = Number(amountInput.value);
-  const from = fromSelect.value;
-  const to = toSelect.value;
-  if (amount > 0) {
-    getRates(from, function (rates) {
-      showResult(amount, from, to, rates);
-    });
-  } else {
-    showError("Por favor, introduce una cantidad válida");
+  invertCurrencies: function() {
+    var fromCurrency = this.fromSelect.value;
+    var toCurrency = this.toSelect.value;
+    this.fromSelect.value = toCurrency;
+    this.toSelect.value = fromCurrency;
+    this.handleSubmit(new Event('submit'));
   }
-}
+};
 
-form.addEventListener("submit", handleSubmit);
-
-getRates("USD", function (rates) {
-  const currencies = Object.keys(rates);
-  for (const currency of currencies) {
-    fromSelect.innerHTML += `<option value="${currency}">${currency}</option>`;
-    toSelect.innerHTML += `<option value="${currency}">${currency}</option>`;
-  }
-});
-
-const invertButton = document.getElementById("invert");
-
-function invertCurrencies() {
-  const fromCurrency = fromSelect.value;
-  const toCurrency = toSelect.value;
-  fromSelect.value = toCurrency;
-  toSelect.value = fromCurrency;
-  handleSubmit(new Event('submit'));
-}
-
-invertButton.addEventListener("click", invertCurrencies);
+app.init();

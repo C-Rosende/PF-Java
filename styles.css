@@ -3,7 +3,9 @@ body {
   background-image: url('/Imagenes/Background.jpg');
   background-repeat: no-repeat;
   background-size: cover;
+  background-attachment: fixed;
 }
+
 
 .container {
   max-width: 800px;
@@ -50,11 +52,14 @@ h1 {
   border-radius: 5px;
 }
 
+#invert, .alert {
+  display: block;
+}
+
 #invert {
   width: 30px;
   height: 30px;
   margin: 0 auto;
-  display: block;
 }
 
 #invert img {
@@ -64,4 +69,12 @@ h1 {
 
 .alert-danger {
   background-color: #f44336;
+}
+
+#result {
+  background-color: #d1cfcf;
+  color: #800080;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
 }
