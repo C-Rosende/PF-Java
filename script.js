@@ -63,15 +63,18 @@ let app = {
     this.form.addEventListener("submit", this.handleSubmit.bind(this));
     this.getRates("USD", function (rates) {
       this.currencies = Object.keys(rates);
-      for (let currency of this.currencies) {
+      let options = this.currencies.map(function(currency) {
         let option = document.createElement('option');
         option.value = currency;
         option.textContent = currency;
-        this.fromSelect.appendChild(option);
+        return option;
+      });
+      options.forEach(option => {
+        this.fromSelect.appendChild(option.cloneNode(true));
         this.toSelect.appendChild(option.cloneNode(true));
-      }
+      });
     }.bind(this));
-
+  
     let invertButton = document.getElementById("invert");
     invertButton.addEventListener("click", this.invertCurrencies.bind(this));
   },
