@@ -1,11 +1,10 @@
 body {
   font-family: Arial, sans-serif;
-  background-image: url('/Imagenes/Background.jpg');
+  background-image: url('./Imagenes/Background.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
 }
-
 
 .container {
   max-width: 800px;
